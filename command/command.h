@@ -2,13 +2,15 @@
 #define COMMAND_H
 
 #include <memory>
+#include <functional>
 
 template<typename T, typename ...Args>
 class Command
 {
 public:
-    Command( T (*f)( Args... args) ) :
-        command(std::make_shared<FreeCommand>(f)) {}
+    std::function<T(Args...)> af;
+    Command( std::function<T(Args...)> const &f ) :
+        command(std::make_shared<StdFunctionCommand>(f)) {}
 
     template<typename U>
     Command( U const * const example, T (U::*f)( Args... args) const ) :
@@ -33,27 +35,12 @@ private:
         virtual T execute( Args... args ) const = 0;
     };
 
-    // Command class for global-space function
-    class FreeCommand : public BasicCommand
-    {
-    public:
-        FreeCommand( T (*f)( Args... args) ) : f(f) {}
-
-        T execute( Args... args ) const override
-        {
-            return f(args...);
-        }
-
-    private:
-        T (*f)( Args... args );
-    };
-
     // Command class for mutable method
     template<typename U>
     class InnerCommandMutable : public BasicCommand
     {
     public:
-        InnerCommandMutable( U * const example, T (U::*f)( Args... args) ) : thisPtr(example), f(f)
+        InnerCommandMutable( U * const example, T (U::*inF)( Args... args) ) : thisPtr(example), f(inF)
         {
         }
 
@@ -66,12 +53,12 @@ private:
         T (U::*f)( Args... args );
     };
 
-    // Command class for method
+    // Command class for constant method
     template<typename U>
     class InnerCommandConst : public BasicCommand
     {
     public:
-        InnerCommandConst( U const * const example, T (U::*f)( Args... args) const ) : thisPtr(example), f(f)
+        InnerCommandConst( U const * const example, T (U::*inF)( Args... args) const ) : thisPtr(example), f(inF)
         {
         }
 
@@ -82,6 +69,19 @@ private:
     private:
         U const * const thisPtr;
         T (U::*f)( Args... args ) const;
+    };
+
+    // Command class for std::function
+    class StdFunctionCommand : public InnerCommandConst<std::function<T(Args...)>>
+    {
+    public:
+        StdFunctionCommand( std::function<T(Args...)> const &f ) :
+            InnerCommandConst<std::function<T(Args...)>>(&myFuncCopy, &std::function<T(Args...)>::operator()),
+            myFuncCopy(f)
+        {
+        }
+    private:
+        std::function<T(Args...)> myFuncCopy;
     };
 
     std::shared_ptr<BasicCommand> command;

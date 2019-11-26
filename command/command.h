@@ -8,7 +8,6 @@ template<typename T, typename ...Args>
 class Command
 {
 public:
-    std::function<T(Args...)> af;
     Command( std::function<T(Args...)> const &f ) :
         command(std::make_shared<StdFunctionCommand>(f)) {}
 

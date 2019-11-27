@@ -6,4 +6,6 @@ SOURCES += \
 	main.cpp
 
 HEADERS += \
-    command.h
+    binarytree.h \
+    command.h \
+    any.h

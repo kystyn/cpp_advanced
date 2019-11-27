@@ -86,4 +86,8 @@ private:
     std::shared_ptr<BasicCommand> command;
 };
 
+template<typename T, typename ...Args>
+Command( T (*f)( Args... args) ) -> Command<T, Args...>;
+
+
 #endif // COMMAND_H

@@ -8,4 +8,6 @@ SOURCES += \
 HEADERS += \
     binarytree.h \
     command.h \
-    any.h
+    any.h \
+    variable.h \
+    varmanager.h

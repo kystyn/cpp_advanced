@@ -5,6 +5,8 @@
 #include "any.h"
 #include "binarytree.h"
 
+#include "varmanager.h"
+
 using namespace std;
 
 class Foo
@@ -12,15 +14,17 @@ class Foo
 public:
     Foo( int val ) : val(val) {}
 
-    double funct1( double a, double c )
+    double funct1( int a, int c )
     {
         return a * c + val++;
     }
 
-    double funct2( double a, double c ) const
+    double funct2( int a, int c ) const
     {
         return a * c + val;
     }
+
+
 private:
     int val;
 };
@@ -34,11 +38,16 @@ int main()
 {
     Foo bar(2);
 
-    Command c0(doSmth);
-    Command<void, int, int> c1([]( int a, int b ) { std::cout << a + b << std::endl; });
-    Command c2(&bar, &Foo::funct1);
-    Command<double, double, double> c3([&bar]( double a, double c ) -> double { return bar.funct2(a, c); });
-    Command c4(&bar, &Foo::funct2);
+    VarManager engine;
+
+    std::vector<std::pair<std::string, Any>> arrr =
+    {
+        {"arg1", 0},
+        {"arg2", 0}
+    };
+
+    //Command<double> command(&bar, &Foo::funct1, {{"arg1", 0}, {"arg2", 0}});
+    Command<double> command(&bar, &Foo::funct1, arrr);
 
     std::cout << c2(1.05, 3) << std::endl;
     c0(2.0, 5.0);

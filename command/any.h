@@ -9,8 +9,13 @@ class Any
 public:
     template<typename T>
     Any( T newVariable ) :
-        var(std::make_unique<ConcreteHolder<T>>(ConcreteHolder<T>(newVariable)))
+        var(std::make_shared<ConcreteHolder<T>>(ConcreteHolder<T>(newVariable)))
     {
+    }
+
+    Any & operator=( Any const &a )
+    {
+        this->var = a.var;
     }
 
     template<typename U>
@@ -60,7 +65,7 @@ private:
         T getValue() const { return variable; }
     };
 
-    std::unique_ptr<BaseHolder> var;
+    std::shared_ptr<BaseHolder> var;
 };
 
 #endif // ANY_H

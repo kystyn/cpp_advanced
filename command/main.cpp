@@ -40,24 +40,29 @@ int main()
 
     VarManager engine;
 
-    std::vector<std::pair<std::string, Any>> arrr =
+    std::vector<std::pair<std::string, Any>> arg =
     {
         {"arg1", 0},
         {"arg2", 0}
     };
 
     //Command<double> command(&bar, &Foo::funct1, {{"arg1", 0}, {"arg2", 0}});
-    Command<double> command(&bar, &Foo::funct1, arrr);
+    Command command(&bar, &Foo::funct1, arg);
 
+    std::cout << command({{"arg2", 5}, {"arg1", 3}}) << "\n";
+    std::cout << command({{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
+    std::cout << command({{"arg2", 5}, {"arg3", 3}}) << "\n";
+
+    /*
     std::cout << c2(1.05, 3) << std::endl;
     c0(2.0, 5.0);
     c1(2, 3);
     c1(5, 8);
     std::cout << c3(2.05, 3) << std::endl;
     std::cout << c2(2.05, 5) << std::endl;
-    std::cout << c4(10, 20) << std::endl;
+    std::cout << c4(10, 20) << std::endl;*/
 
-    BinaryTree<std::string, Any> t;
+    //BinaryTree<std::string, Any> t;
 
     return 0;
 }

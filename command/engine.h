@@ -10,16 +10,16 @@ public:
     using VarManager::VarManager;
 
     template<typename T, typename ...Args>
-    void registerCommand( std::string const &name, Command<T, Args...> *command )
+    void registerCommand( std::string const &name, Command<T, Args...> command )
     {
         VarManager::initializeVariable(name, command);
     }
 
     template<typename T, typename ...Args>
     int execute( std::string const &name, std::map<std::string, Any> const &args ) {
-        Command<T, Args...> *command;
+        Command<T, Args...> command;
         VarManager::getValue(name, command);
-        return (*command)(args);
+        return command(args);
     }
 
 };

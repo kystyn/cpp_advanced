@@ -38,43 +38,55 @@ int main()
 {
     Foo bar(2);
 
-    //Engine engine;
+    Engine engine;
     Command
-            command1(&bar, &Foo::funct1, {{"arg1", 0}, {"arg2", 0}});
-            //command2(&bar, &Foo::funct2, {{"arg11", 0}, {"arg21", 0}});
+            command1(&bar, &Foo::funct1, {{"arg1", 0}, {"arg2", 0}}),
+            command2(&bar, &Foo::funct2, {{"arg11", 0}, {"arg21", 0}});
 
-    //engine.registerCommand("function1", &command1);
-    //engine.registerCommand("function2", &command2);
+    engine.registerCommand("function1", command1);
+    engine.registerCommand("function2", command2);
 
     try {
-        //std::cout << engine.execute<int, int, int>("function1", {{"arg2", 5}, {"arg1", 3}}) << "\n";
-        std::cout << command1({{"arg2", 5}, {"arg1", 3}}) << "\n";
+        std::cout << engine.execute<int, int, int>("function1", {{"arg2", 5}, {"arg1", 3}}) << "\n";
+        //std::cout << command1({{"arg2", 5}, {"arg1", 3}}) << "\n";
     } catch (const char *msg) {
         std::cerr << "Error: " << msg << "\n";
     }
 
     try {
-        //std::cout << engine.execute<int, int, int>("function1", {{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
-        std::cout << command1({{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
+        std::cout << engine.execute<int, int, int>("function1", {{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
+        //std::cout << command1({{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
     } catch (const char *msg) {
         std::cerr << "Error: " << msg << "\n";
     }
 
     try {
-        //std::cout << engine.execute<int, int, int>("function1", {{"arg2", 5}, {"arg3", 3}}) << "\n";
-        std::cout << command1({{"arg2", 5}, {"arg3", 3}}) << "\n";
+        std::cout << engine.execute<int, int, int>("function1", {{"arg2", 5}, {"arg3", 3}}) << "\n";
+        //std::cout << command1({{"arg2", 5}, {"arg3", 3}}) << "\n";
     } catch (const char *msg) {
         std::cerr << "Error: " << msg << "\n";
     }
 
-    /*
-    std::cout << c2(1.05, 3) << std::endl;
-    c0(2.0, 5.0);
-    c1(2, 3);
-    c1(5, 8);
-    std::cout << c3(2.05, 3) << std::endl;
-    std::cout << c2(2.05, 5) << std::endl;
-    std::cout << c4(10, 20) << std::endl;*/
+    try {
+        std::cout << engine.execute<int, int, int>("function2", {{"arg11", 0.1}, {"arg21", "asd"}}) << "\n";
+        //std::cout << command1({{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
+    } catch (const char *msg) {
+        std::cerr << "Error: " << msg << "\n";
+    }
+
+    try {
+        std::cout << engine.execute<int, int, int>("function2", {{"arg11", 5}, {"arg21", 3}}) << "\n";
+        //std::cout << command1({{"arg2", 5}, {"arg1", 3}}) << "\n";
+    } catch (const char *msg) {
+        std::cerr << "Error: " << msg << "\n";
+    }
+
+    try {
+        std::cout << engine.execute<int, int, int>("function2", {{"arg21", "a+s"}, {"arg23", 'a'}}) << "\n";
+        //std::cout << command1({{"arg2", 5}, {"arg3", 3}}) << "\n";
+    } catch (const char *msg) {
+        std::cerr << "Error: " << msg << "\n";
+    }
 
     //BinaryTree<std::string, Any> t;
 

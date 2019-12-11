@@ -8,7 +8,7 @@ SOURCES += \
 HEADERS += \
     binarytree.h \
     command.h \
-    any.h# \
-    #engine.h \
+    any.h \
+    engine.h \
     #variable.h \
-    #varmanager.h
+    varmanager.h

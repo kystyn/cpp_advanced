@@ -12,6 +12,8 @@ template<typename T, typename ...Args>
 class Command
 {
 public:
+    Command() {}
+
     Command( std::function<T(Args...)> const &f,
              std::vector<std::pair<std::string, Any>> const &cmdArgs ) :
         command(std::make_shared<StdFunctionCommand>(f, cmdArgs)) {}

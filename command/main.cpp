@@ -5,7 +5,7 @@
 #include "any.h"
 #include "binarytree.h"
 
-#include "varmanager.h"
+#include "engine.h"
 
 using namespace std;
 
@@ -14,12 +14,12 @@ class Foo
 public:
     Foo( int val ) : val(val) {}
 
-    double funct1( int a, int c )
+    int funct1( int a, int c )
     {
-        return a * c + val++;
+        return a - c + val++;
     }
 
-    double funct2( int a, int c ) const
+    int funct2( int a, int c ) const
     {
         return a * c + val;
     }
@@ -38,20 +38,34 @@ int main()
 {
     Foo bar(2);
 
-    VarManager engine;
+    //Engine engine;
+    Command
+            command1(&bar, &Foo::funct1, {{"arg1", 0}, {"arg2", 0}});
+            //command2(&bar, &Foo::funct2, {{"arg11", 0}, {"arg21", 0}});
 
-    std::vector<std::pair<std::string, Any>> arg =
-    {
-        {"arg1", 0},
-        {"arg2", 0}
-    };
+    //engine.registerCommand("function1", &command1);
+    //engine.registerCommand("function2", &command2);
 
-    //Command<double> command(&bar, &Foo::funct1, {{"arg1", 0}, {"arg2", 0}});
-    Command command(&bar, &Foo::funct1, arg);
+    try {
+        //std::cout << engine.execute<int, int, int>("function1", {{"arg2", 5}, {"arg1", 3}}) << "\n";
+        std::cout << command1({{"arg2", 5}, {"arg1", 3}}) << "\n";
+    } catch (const char *msg) {
+        std::cerr << "Error: " << msg << "\n";
+    }
 
-    std::cout << command({{"arg2", 5}, {"arg1", 3}}) << "\n";
-    std::cout << command({{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
-    std::cout << command({{"arg2", 5}, {"arg3", 3}}) << "\n";
+    try {
+        //std::cout << engine.execute<int, int, int>("function1", {{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
+        std::cout << command1({{"arg2", 0.7f}, {"arg1", 3}}) << "\n";
+    } catch (const char *msg) {
+        std::cerr << "Error: " << msg << "\n";
+    }
+
+    try {
+        //std::cout << engine.execute<int, int, int>("function1", {{"arg2", 5}, {"arg3", 3}}) << "\n";
+        std::cout << command1({{"arg2", 5}, {"arg3", 3}}) << "\n";
+    } catch (const char *msg) {
+        std::cerr << "Error: " << msg << "\n";
+    }
 
     /*
     std::cout << c2(1.05, 3) << std::endl;

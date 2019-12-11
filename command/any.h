@@ -13,10 +13,7 @@ public:
     {
     }
 
-    Any & operator=( Any const &a )
-    {
-        this->var = a.var;
-    }
+    Any() {}
 
     template<typename U>
     Any & operator=( const U &newVal )
@@ -67,5 +64,6 @@ private:
 
     std::shared_ptr<BaseHolder> var;
 };
+
 
 #endif // ANY_H

@@ -1,6 +1,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include <iostream>
 #include <memory>
 #include <functional>
 #include <map>
@@ -13,17 +14,17 @@ class Command
 public:
     Command( std::function<T(Args...)> const &f,
              std::vector<std::pair<std::string, Any>> const &cmdArgs ) :
-        command(std::make_shared<StdFunctionCommand>(f), cmdArgs) {}
+        command(std::make_shared<StdFunctionCommand>(f, cmdArgs)) {}
 
     template<typename U>
     Command( U const * const example, T (U::*f)( Args... ) const,
              std::vector<std::pair<std::string, Any>> const &cmdArgs ) :
-        command(std::make_shared<InnerCommandConst<U>>(example, f), cmdArgs) {}
+        command(std::make_shared<InnerCommandConst<U>>(example, f, cmdArgs)) {}
 
     template<typename U>
     Command( U * const example, T (U::*f)( Args... ) ,
              std::vector<std::pair<std::string, Any>> const &cmdArgs ) :
-        command(std::make_shared<InnerCommandMutable<U>>(example, f), cmdArgs) {}
+        command(std::make_shared<InnerCommandMutable<U>>(example, f, cmdArgs)) {}
 
     T operator()( std::map<std::string, Any> const &args ) const
     {
@@ -40,18 +41,19 @@ private:
 
         virtual T execute( std::map<std::string, Any> const &args ) const = 0;
 
-        std::vector<std::pair<std::string, Any>> mapToVector( std::map<std::string, Any> &args ) const {
+    protected:
+        std::vector<std::pair<std::string, Any>> mapToVector( std::map<std::string, Any> const &args ) const {
             std::vector<std::pair<std::string, Any>> v(args.size());
 
             size_t i = 0;
             for (auto t : cmdArgs)
-                v[i++] = args.find(t.first)->second;
+                v[i++] = *args.find(t.first);
 
             return v;
         }
 
     protected:
-        std::vector<std::pair<std::string, Any>> const &cmdArgs;
+        std::vector<std::pair<std::string, Any>> cmdArgs;
     };
 
     // Command class for mutable method
@@ -72,16 +74,15 @@ private:
             for (auto &a : BasicCommand::cmdArgs)
                 if (args.find(a.first) == args.end())
                     throw "Bad argument list";
-            return exec(0, args);
+            return exec(std::index_sequence_for<Args...>(), BasicCommand::mapToVector(args));
         }
 
     private:
-        T exec( int iterNo,
-                std::vector<std::pair<std::string, Any>> const &args, Args... argsQ )
+        template<size_t... S>
+        T exec( std::index_sequence<S...> const &,
+                std::vector<std::pair<std::string, Any>> &&args ) const
         {
-            return exec(iterNo + 1, args, argsQ..., args[iterNo]);
-            if (iterNo == BasicCommand::cmdArgs.size() - 1)
-                return (thisPtr->*f)(argsQ...);
+            return (thisPtr->*f)(args[S].second.cast<int>()...);
         }
 
         U * const thisPtr;
@@ -106,16 +107,15 @@ private:
             for (auto &a : BasicCommand::cmdArgs)
                 if (args.find(a.first) == args.end())
                     throw "Bad argument list";
-            return exec(0, args);
+            return exec(std::index_sequence_for<Args...>(), BasicCommand::mapToVector(args));
         }
 
     private:
-        T exec( int iterNo,
-                std::vector<std::pair<std::string, Any>> const &args, Args ...argsQ )
+        template<size_t... S>
+        T exec( std::index_sequence<S...> const &,
+                std::vector<std::pair<std::string, Any>> &&args ) const
         {
-            return exec(iterNo + 1, args, argsQ..., args[iterNo]);
-            if (iterNo == BasicCommand::cmdArgs.size() - 1)
-                return (thisPtr->*f)(argsQ...);
+            return (thisPtr->*f)(args[S].second.cast<int>()...);
         }
 
         U const * const thisPtr;
@@ -139,9 +139,5 @@ private:
 
     std::shared_ptr<BasicCommand> command;
 };
-
-//template<typename T, typename ...Args>
-//Command( T (*f)( Args... args) ) -> Command<T, Args...>;
-
 
 #endif // COMMAND_H
